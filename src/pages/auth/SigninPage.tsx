@@ -15,13 +15,11 @@ import { Input } from "@/components/ui/input";
 import { signinFormSchema } from "./validation";
 import { SigninData } from "./Static-Data";
 
-
+import { useNavigate } from "react-router-dom";
+import { useSignInMutation } from "@/features/api/authApi";
+import { setCredentials } from "@/features/auth/authReducer";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { fetchSigninData, setUser } from "@/features/auth/authReducer";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useNavigate } from "react-router-dom";
-
 
 const SigninPage = () => {
   const form = useForm<z.infer<typeof signinFormSchema>>({
@@ -33,20 +31,38 @@ const SigninPage = () => {
   });
 
   const dispatch: AppDispatch = useDispatch();
-const navigate = useNavigate()
+
+  const [signIn, { isLoading, isError }] = useSignInMutation();
+  const navigate = useNavigate();
   async function onSubmit(values: z.infer<typeof signinFormSchema>) {
-   try {
-    const resultAction = await dispatch(fetchSigninData(values));
-    const user = unwrapResult(resultAction);
-      dispatch(setUser(user));
-     
-      if(user){
-        navigate("/")
+    try {
+      const payload = await signIn({
+        email: values.email,
+        password: values.password,
+      }).unwrap();
+    
+      if (payload) {
+         dispatch(setCredentials(payload))
+        navigate("/");
+      }
+      console.log(isError);
+      // console.log(data);
+    } catch (error) {
+      if (error && typeof error === 'object' && 'status' in error) {
+        const err = error as { status: number; data: any };
+        if (err.status === 400) {
+          console.error("Bad request: ", err.data?.message || "Invalid email or password");
+          alert("Invalid email or password.");
+        } else {
+          console.error("An error occurred: ", err.data?.message || "Please try again.");
+          alert("An error occurred. Please try again.");
+        }
+      } else {
+        console.error("An unknown error occurred.");
+        alert("An unknown error occurred. Please try again.");
       }
 
-   } catch (error) {
-    console.error(error)
-   }
+    }
   }
 
   return (
@@ -76,8 +92,8 @@ const navigate = useNavigate()
               )}
             />
           ))}
-          <Button type="submit" className="border">
-            Submit
+          <Button type="submit" className="border" disabled={isLoading}>
+            {isLoading ? "loading..." : "Signin"}
           </Button>
         </form>
       </Form>

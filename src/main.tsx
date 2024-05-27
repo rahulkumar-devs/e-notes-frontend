@@ -9,31 +9,44 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
-import RootLayout from "./layouts/RootLayout";
+import ProtectedLayout from "./layouts/ProtectedLayout";
 import SigninPage from "./pages/auth/SigninPage";
 import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { persistor, store } from "./store/store";
+import UnAuthorized from "./pages/auth/UnAuthorized";
+import { PersistGate } from "redux-persist/integration/react";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Books from "./pages/books/Books";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route
         path="/"
-        element={<RootLayout allowRoles={["admin", "member", "user"]} />}
+        element={<ProtectedLayout allowRoles={["admin", "member", "user"]} />}
       >
         <Route path="" element={<div>Home page</div>} />
         <Route path="contact" element={<div>Contact</div>} />
       </Route>
-      <Route path="/" element={<RootLayout allowRoles={["admin", "user"]} />}>
+      <Route
+        path="/"
+        element={<ProtectedLayout allowRoles={["admin", "user"]} />}
+      >
         <Route path="user" element={<div>User</div>} />
+        <Route path="books" element={<Books/>} />
+      </Route>
+      <Route path="/" element={<ProtectedLayout allowRoles={["admin"]} />}>
+        <Route path="dashboard" element={<Dashboard />} />
       </Route>
 
-      <Route path="unAuthorized" element={<div>unAuthorized</div>} />
+      <Route path="unAuthorized" element={<UnAuthorized />} />
 
       <Route path="/" element={<AuthLayout />}>
         <Route path="signin" element={<SigninPage />} />
-        {/* <Route path="logout" action={logoutUser} /> */}
+        <Route path="refresh" element={<div>refresh</div>} />
       </Route>
+      <Route path="*" element={<div>Not a Valid path</div>} />
+
     </>
   )
 );
@@ -41,7 +54,9 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <PersistGate loading={null} persistor={persistor}>
+        {() => <RouterProvider router={router} />}
+      </PersistGate>
     </Provider>
   </React.StrictMode>
 );
