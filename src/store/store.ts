@@ -1,7 +1,6 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import {
   persistStore,
-  persistReducer,
   FLUSH,
   PAUSE,
   PERSIST,
@@ -9,46 +8,14 @@ import {
   REGISTER,
   REHYDRATE,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import { setupListeners } from "@reduxjs/toolkit/query/react"; // Import setupListeners function
-import  signinFetchApi  from "@/features/api/authApi"; // Import your RTK Query API slice
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 
-import authReducer from "@/features/auth/authReducer";
-import refreshTokenReducer from "@/features/refreshTokenReducer";
-
-// Combine persisted reducers
-const persistedReducers = combineReducers({
-  auth: authReducer, 
-});
-
-// Combine non-persisted reducers
-const nonPersistedReducers = combineReducers({
-  refreshToken: refreshTokenReducer,
-});
-
-// Persist configuration
-const persistConfig = {
-  key: "root",
-  version: 1,
-  storage,
-};
-
-// Create a persisted reducer
-const persistedReducer = persistReducer(persistConfig, persistedReducers);
-
-// Combine persisted and non-persisted reducers into a root reducer
-const rootReducer = combineReducers({
-  persisted: persistedReducer,
-  nonPersisted: nonPersistedReducers,
-  [signinFetchApi.reducerPath]: signinFetchApi.reducer, // Add the RTK Query API reducer
-});
-
-// Middleware configuration
-
+import persistedReducer from "./rootReducer";
+import signinFetchApi from "@/features/api/authApi";
 
 // Configure the store with the root reducer and middleware
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

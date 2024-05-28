@@ -18,23 +18,22 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      const { user, token } = action.payload;
-
+      const { user, accessToken } = action.payload;
+      // console.log(user, accessToken);
       state.user = user;
-      state.token = token;
+      state.token = accessToken;
+      state.roles=user.role;
     },
     logOut: (state) => {
       state.user = null;
       state.token = null;
+      state.roles = [];
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase("auth-user/clearState", () => initialState);
-  },
+
 });
 
 export const { setCredentials, logOut } = authSlice.actions;
 export default authSlice.reducer;
 
-// Action to clear the persisted state
-export const clearState = () => ({ type: "auth-user/clearState" });
+

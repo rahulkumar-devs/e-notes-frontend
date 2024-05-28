@@ -40,28 +40,31 @@ const SigninPage = () => {
         email: values.email,
         password: values.password,
       }).unwrap();
-    
+      // console.log(payload)
+
       if (payload) {
-         dispatch(setCredentials(payload))
+        dispatch(setCredentials(payload));
         navigate("/");
       }
       console.log(isError);
       // console.log(data);
     } catch (error) {
-      if (error && typeof error === 'object' && 'status' in error) {
+      if (error && typeof error === "object" && "status" in error) {
         const err = error as { status: number; data: any };
         if (err.status === 400) {
-          console.error("Bad request: ", err.data?.message || "Invalid email or password");
-          alert("Invalid email or password.");
+          console.error(
+            "Bad request: ",
+            err.data?.message || "Invalid email or password"
+          );
         } else {
-          console.error("An error occurred: ", err.data?.message || "Please try again.");
-          alert("An error occurred. Please try again.");
+          console.error(
+            "An error occurred: ",
+            err.data?.message || "Please try again."
+          );
         }
       } else {
         console.error("An unknown error occurred.");
-        alert("An unknown error occurred. Please try again.");
       }
-
     }
   }
 

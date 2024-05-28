@@ -1,7 +1,10 @@
+// import { FaChartLine, FaShoppingCart, FaUserCheck, FaUsers } from "react-icons/fa"
 
 const Dashboard = () => {
   return (
-    <div>Dashboard</div>
+ <>
+   Hii
+ </>
   )
 }
 

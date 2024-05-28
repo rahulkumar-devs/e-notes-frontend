@@ -14,17 +14,18 @@ interface RootLayoutProps {
 // }
 
 const ProtectedLayout = ({ allowRoles }: RootLayoutProps) => {
-  const {user,roles} = useSelector((state: RootState) => state.persisted.auth);
+  const {user,roles} = useSelector((state: RootState) => state.auth);
 
   const location = useLocation();
+  console.log(roles)
 
   if (!user) {
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
-  const userRoles = roles;
 
-  const hasRequiredRole = userRoles.find(role=>allowRoles.includes(role))
+
+  const hasRequiredRole = roles.find(role=>allowRoles.includes(role))
 
   if (!hasRequiredRole) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;

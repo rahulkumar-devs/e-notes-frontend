@@ -16,7 +16,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:4000/api",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).persisted.auth.token;
+    const token = (getState() as RootState).auth.token;
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
     }
@@ -46,6 +46,7 @@ const baseQueryWithReauth: typeof baseQuery = async (
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logOut());
+      // api.dispatch(clearState());
     }
   }
 
@@ -77,8 +78,14 @@ const signinFetchApi = createApi({
         method: "GET",
       }),
     }),
+    logOutUser: builder.mutation<any, void>({
+      query: () => ({
+        url: "/logout",
+        method: "POST",
+      }),
+    }),
   }),
 });
 
-export const { useSignInMutation, useRefreshApiMutation ,useBookApiQuery} = signinFetchApi;
+export const { useSignInMutation, useRefreshApiMutation ,useBookApiQuery,useLogOutUserMutation} = signinFetchApi;
 export default signinFetchApi;
