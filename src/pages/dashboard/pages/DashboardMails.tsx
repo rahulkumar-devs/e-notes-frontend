@@ -1,4 +1,4 @@
-const Mails = () => {
+const DashboardMails = () => {
   return (
     <div>
       Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsam maxime
@@ -31,4 +31,4 @@ const Mails = () => {
   );
 };
 
-export default Mails;
+export default DashboardMails;

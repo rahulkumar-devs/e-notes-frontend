@@ -18,9 +18,14 @@ import { PersistGate } from "redux-persist/integration/react";
 // import Dashboard from "./pages/dashboard/Dashboard";
 import Books from "./pages/books/Books";
 import DashboardLayout from "./layouts/DashboardLayout";
-import Mails from "./pages/dashboard/pages/Mails";
-import DashboardHome from "./pages/dashboard/pages/DashboardHome";
-import DashboardSettings from "./pages/dashboard/pages/DashboardSettings";
+
+import {
+  DashboardBooks,
+  DashboardHome,
+  DashboardUsers,
+  DashboardSettings,
+  DashboardMails,
+} from "@/pages/dashboard/pages";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,7 +35,7 @@ const router = createBrowserRouter(
         <Route path="signin" element={<SigninPage />} />
         <Route path="refresh" element={<div>refresh</div>} />
       </Route>
-      
+
       {/* Accessible for all Authenticated users */}
       <Route
         path="/"
@@ -55,8 +60,11 @@ const router = createBrowserRouter(
         element={<DashboardLayout allowRoles={["admin"]} />}
       >
         <Route index element={<DashboardHome />} />
-        <Route path="mails" element={<Mails />} />
+        <Route path="mails" element={<DashboardMails />} />
         <Route path="settings" element={<DashboardSettings />} />
+        <Route path="books" element={<DashboardBooks />} />
+        <Route path="users" element={<DashboardUsers />} />
+        <Route path="logout" element={"logout"} />
       </Route>
 
       {/* Catch-all for undefined routes */}

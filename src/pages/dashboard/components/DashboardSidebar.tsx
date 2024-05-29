@@ -81,7 +81,7 @@ export default function DashboardSidebar() {
               })}
               <li className="rounded-sm">
                 <NavLink
-                  to="/logout"
+                  to="/dashboard/logout"
                   className={({ isActive }) =>
                     `flex items-center p-2 space-x-3 rounded-md ${
                       isActive ? "bg-gray-800" : ""

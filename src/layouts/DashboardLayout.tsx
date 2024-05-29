@@ -17,25 +17,28 @@ const DashboardLayout = ({ allowRoles }: RootLayoutProps) => {
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
-  const hasRequiredRole = roles.find((role:"admin" | "user" | "member") => allowRoles.includes(role));
+  const hasRequiredRole = roles.find((role: "admin" | "user" | "member") =>
+    allowRoles.includes(role)
+  );
 
   if (!hasRequiredRole) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
   return (
     <>
-   <div>
-   <div className=" md:flex ">
-   <DashboardSidebar/>
-      <Outlet />
-   </div>
       <div>
-        Footer 
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur sed inventore hic.
+        <div className=" md:flex ">
+          <DashboardSidebar />
+         <div className=" max-h-screen overflow-y-scroll scroll-smooth overflow-hidden  w-full">
+         <Outlet />
+         </div>
+        </div>
+        <div>
+          Footer Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Consequuntur sed inventore hic.
+        </div>
       </div>
-  
-   </div>
-   </>
+    </>
   );
 };
 
