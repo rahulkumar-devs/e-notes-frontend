@@ -26,6 +26,7 @@ import {
   DashboardSettings,
   DashboardMails,
 } from "@/pages/dashboard/pages";
+import { ThemeProvider } from "@/components/Theme-provider"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -76,9 +77,11 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+     <ThemeProvider>
+     <PersistGate loading={null} persistor={persistor}>
         {() => <RouterProvider router={router} />}
       </PersistGate>
+     </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );
