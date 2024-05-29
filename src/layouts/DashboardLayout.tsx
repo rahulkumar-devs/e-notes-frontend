@@ -11,7 +11,7 @@ const DashboardLayout = ({ allowRoles }: RootLayoutProps) => {
   const { user, roles } = useSelector((state: RootState) => state.auth);
 
   const location = useLocation();
-  console.log(roles);
+
 
   if (!user) {
     return <Navigate to="/signin" state={{ from: location }} replace />;
@@ -27,11 +27,11 @@ const DashboardLayout = ({ allowRoles }: RootLayoutProps) => {
   return (
     <>
       <div>
-        <div className=" md:flex ">
+        <div className=" md:flex dark:bg-gray-900 dark:text-white">
           <DashboardSidebar />
-         <div className=" max-h-screen overflow-y-scroll scroll-smooth overflow-hidden  w-full">
-         <Outlet />
-         </div>
+          <div className=" max-h-screen overflow-y-scroll scroll-smooth overflow-hidden  w-full">
+            <Outlet />
+          </div>
         </div>
         <div>
           Footer Lorem ipsum dolor sit amet consectetur adipisicing elit.

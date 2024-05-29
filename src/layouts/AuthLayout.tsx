@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button"
-
 
 import { Outlet } from "react-router-dom"
 
@@ -12,9 +10,6 @@ const AuthLayout = () => {
 
   return (
    <>
-   <Button >
-    refresh
-   </Button>
    <Outlet/>
    </>
   )

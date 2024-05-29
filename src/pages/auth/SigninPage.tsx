@@ -73,7 +73,7 @@ const SigninPage = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 m-3 bg-gray-900 p-8 rounded-lg max-w-md w-full text-white"
+          className="space-y-8 m-3 bg-gray-900 p-8 rounded-lg max-w-md w-full text-white dark:bg-gray-900 dark:text-white"
         >
           {SigninData.map((item, i) => (
             <FormField
@@ -87,7 +87,7 @@ const SigninPage = () => {
                     <Input
                       placeholder={item.placeholder}
                       {...field}
-                      className="text-black"
+                      className="dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />

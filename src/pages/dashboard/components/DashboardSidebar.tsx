@@ -36,7 +36,7 @@ export default function DashboardSidebar() {
         <div className="space-y-3">
           <div className="flex items-center justify-between ">
             <h2 className="text-xl font-bold text-white ">Dashboard</h2>
-            <button onClick={handleToggleSidebar} className="block md:hidden">
+            <button onClick={handleToggleSidebar} className="block">
               <FaBars className="w-6 h-6 text-white" />
             </button>
           </div>
