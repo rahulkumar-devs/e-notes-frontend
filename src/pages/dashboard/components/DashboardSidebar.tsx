@@ -10,6 +10,10 @@ import {
   FaSearch,
 } from "react-icons/fa";
 import dashboardSidebar from "./static-data";
+import { Button } from "@/components/ui/button";
+import { AppDispatch } from "@/store/store";
+import { useDispatch } from "react-redux";
+import { logOut } from "@/features/auth/authReducer";
 
 export default function DashboardSidebar() {
   const [open, setOpen] = React.useState(false);
@@ -24,6 +28,10 @@ export default function DashboardSidebar() {
 
   const handleToggleSidebar = () => {
     setOpen(!open);
+  };
+  const dispatch: AppDispatch = useDispatch();
+  const handleLogOut = () => {
+    dispatch(logOut());
   };
 
   return (
@@ -80,17 +88,13 @@ export default function DashboardSidebar() {
                 );
               })}
               <li className="rounded-sm">
-                <NavLink
-                  to="/dashboard/logout"
-                  className={({ isActive }) =>
-                    `flex items-center p-2 space-x-3 rounded-md ${
-                      isActive ? "bg-gray-800" : ""
-                    }`
-                  }
+                <Button
+                  onClick={handleLogOut}
+                  className={`flex items-center p-2 space-x-3 rounded-md dark:text-white dark:bg-gray-900 `}
                 >
                   <FaSignOutAlt className="w-6 h-6 text-gray-100" />
                   <span className="text-gray-100">Logout</span>
-                </NavLink>
+                </Button>
               </li>
             </ul>
           </div>
