@@ -14,11 +14,19 @@ import { Button } from "@/components/ui/button";
 import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
 import { logOut } from "@/features/auth/authReducer";
+import { useLogOutUserMutation } from "@/features/api/globalsApi";
+
 
 export default function DashboardSidebar() {
   const [open, setOpen] = React.useState(false);
+  const dispatch: AppDispatch = useDispatch();
+  const [logOutUser, { isLoading, isError }] = useLogOutUserMutation();
+ 
 
   React.useEffect(() => {
+
+
+
     if (open) {
       document.body.classList.add("overflow-hidden");
     } else {
@@ -29,13 +37,20 @@ export default function DashboardSidebar() {
   const handleToggleSidebar = () => {
     setOpen(!open);
   };
-  const dispatch: AppDispatch = useDispatch();
-  const handleLogOut = () => {
-    dispatch(logOut());
+
+  const handleLogOut = async () => {
+    try {
+      const response = await logOutUser().unwrap();
+      dispatch(logOut());
+      console.log( isLoading, isError)
+      console.log("Logout successful:", response);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
-    <div className="flex flex-col md:flex-row sticky top-0 right-0">
+    <div className="flex flex-col md:flex-row sticky top-0 right-0 overflow-y-scroll no-scrollbar">
       <div
         className={`${
           open ? "w-full md:w-40" : "w-full md:w-60"
@@ -90,7 +105,7 @@ export default function DashboardSidebar() {
               <li className="rounded-sm">
                 <Button
                   onClick={handleLogOut}
-                  className={`flex items-center p-2 space-x-3 rounded-md dark:text-white dark:bg-gray-900 `}
+                  className={`flex items-center p-2 space-x-3 rounded-md dark:text-white dark:bg-red-500 `}
                 >
                   <FaSignOutAlt className="w-6 h-6 text-gray-100" />
                   <span className="text-gray-100">Logout</span>

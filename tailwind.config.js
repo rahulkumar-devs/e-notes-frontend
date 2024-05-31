@@ -1,5 +1,23 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+
+import tailwindAnimations from "tailwindcss-animate"
+
+const hideScrollbarPlugin = ({ addUtilities }) => {
+  const newUtilities = {
+    ".no-scrollbar::-webkit-scrollbar": {
+      display: "none",
+    },
+    ".no-scrollbar": {
+      scrollbarWidth: "none", /* Firefox */
+      "-ms-overflow-style": "none", /* IE and Edge */
+    },
+  };
+
+  addUtilities(newUtilities);
+};
+
+
+export default {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -33,5 +51,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [tailwindAnimations, hideScrollbarPlugin],
+};

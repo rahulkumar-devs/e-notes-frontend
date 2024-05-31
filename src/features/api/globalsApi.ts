@@ -1,6 +1,6 @@
-import { RootState } from "@/store/store";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logOut, setCredentials } from "../auth/authReducer";
+import { RootState } from "@/store/store";
 
 interface SignInResponse {
   accessToken: string;
@@ -18,7 +18,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("Authorization", `Bearer ${token}`);
     }
     return headers;
   },
@@ -35,31 +35,36 @@ const baseQueryWithReauth: typeof baseQuery = async (
     result.error &&
     (result.error.status === 401 || result.error.status === 403)
   ) {
-    // Try to get a new token
-    const refreshResult = await baseQuery("/refresh-token", api, extraOptions);
-    console.log("refreshResult", refreshResult);
-    if (refreshResult.data) {
-      // Store the new token
-      api.dispatch(setCredentials(refreshResult.data as SignInResponse));
+    try {
+      // Try to get a new token
+      const refreshResult = await baseQuery("/refresh-token", api, extraOptions);
+      if (refreshResult.data) {
+        // Store the new token
+        api.dispatch(setCredentials(refreshResult.data as SignInResponse));
 
-      // Retry the original query with the new token
-      result = await baseQuery(args, api, extraOptions);
-    } else {
+        // Retry the original query with the new token
+        result = await baseQuery(args, api, extraOptions);
+      } else {
+        // If refresh fails, logout the user
+        api.dispatch(logOut());
+      }
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      // If refresh fails, logout the user
       api.dispatch(logOut());
-      // api.dispatch(clearState());
     }
   }
 
   return result;
 };
 
-const signinFetchApi = createApi({
+const GlobalsApi = createApi({
   reducerPath: "FetchedApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     signIn: builder.mutation<SignInResponse, SignInRequestBody>({
       query: (body) => ({
-        url: "/signin", // Adjust the endpoint URL as per your API
+        url: "/signin",
         method: "POST",
         body,
       }),
@@ -67,7 +72,7 @@ const signinFetchApi = createApi({
     refreshApi: builder.mutation<void, void>({
       query: () => ({
         url: "/refresh-token",
-        method: "POST",
+        method: "GET",
         body: null,
       }),
     }),
@@ -75,6 +80,12 @@ const signinFetchApi = createApi({
     bookApi: builder.query<any, void>({
       query: () => ({
         url: "/books",
+        method: "GET",
+      }),
+    }),
+    userApi: builder.query<any, void>({
+      query: () => ({
+        url: "/users",
         method: "GET",
       }),
     }),
@@ -87,5 +98,11 @@ const signinFetchApi = createApi({
   }),
 });
 
-export const { useSignInMutation, useRefreshApiMutation ,useBookApiQuery,useLogOutUserMutation} = signinFetchApi;
-export default signinFetchApi;
+export const {
+  useSignInMutation,
+  useRefreshApiMutation,
+  useBookApiQuery,
+  useLogOutUserMutation,
+  useUserApiQuery,
+} = GlobalsApi;
+export default GlobalsApi;

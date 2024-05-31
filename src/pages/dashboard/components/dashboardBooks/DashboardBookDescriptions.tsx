@@ -7,44 +7,43 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-
 import { UseFormReturn } from "react-hook-form";
-import { bookValidation } from "../../validations/bookValidation";
+import { IncomingBookSchema, bookValidation } from "../../validations/bookValidation";
 import { Textarea } from "@/components/ui/textarea";
 import { FC } from "react";
 
-interface DiscriptionsProps {
-  item: any; // Type as per your configuration
+interface DescriptionsProps {
+  item: any;
   form: UseFormReturn<z.infer<typeof bookValidation>>;
+  bookData?: IncomingBookSchema; 
 }
 
-const DashboardBookDescriptions:FC<DiscriptionsProps> = ({ item, form }) => {
- 
+const DashboardBookDescriptions: FC<DescriptionsProps> = ({
+  item,
+  form,
+  bookData,
+}) => {
   return (
-    <div>
-      <FormField
-        key={item.name}
-        control={form.control}
-        name={item.name as keyof z.infer<typeof bookValidation>}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{item.label}</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                maxLength={item.maxLength}
-                placeholder={item.placeholder}
-             
-              />
-            </FormControl>
-            {item.helpText && (
-              <FormDescription>{item.helpText}</FormDescription>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
+    <FormField
+      key={item.name}
+      control={form.control}
+      name={item.name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{item.label}</FormLabel>
+          <FormControl>
+            <Textarea
+              {...field}
+              maxLength={item.maxLength}
+              placeholder={item.placeholder}
+              defaultValue={bookData?.descriptions || ""}
+            />
+          </FormControl>
+          {item.helpText && <FormDescription>{item.helpText}</FormDescription>}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 };
 

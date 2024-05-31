@@ -21,7 +21,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 
 import {
   DashboardBooks,
-  DashboardHome,
+  DashboardOverview,
   DashboardUsers,
   DashboardSettings,
   DashboardMails,
@@ -60,7 +60,7 @@ const router = createBrowserRouter(
         path="/dashboard"
         element={<DashboardLayout allowRoles={["admin"]} />}
       >
-        <Route index element={<DashboardHome />} />
+        <Route index element={<DashboardOverview />} />
         <Route path="mails" element={<DashboardMails />} />
         <Route path="settings" element={<DashboardSettings />} />
         <Route path="books" element={<DashboardBooks />} />

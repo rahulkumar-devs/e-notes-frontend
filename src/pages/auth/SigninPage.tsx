@@ -16,7 +16,7 @@ import { signinFormSchema } from "./validation";
 import { SigninData } from "./Static-Data";
 
 import { useNavigate } from "react-router-dom";
-import { useSignInMutation } from "@/features/api/authApi";
+import { useSignInMutation } from "@/features/api/globalsApi";
 import { setCredentials } from "@/features/auth/authReducer";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";

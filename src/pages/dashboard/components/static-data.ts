@@ -1,5 +1,7 @@
 import { IconType } from "react-icons/lib";
-import { FaHome, FaEnvelope, FaCog, FaBook, FaPersonBooth } from "react-icons/fa";
+import {  FaEnvelope, FaCog, FaBook, FaPersonBooth, FaChartLine, FaHome, } from "react-icons/fa";
+
+
 
 interface IDashboardSidebar {
   name: string;
@@ -11,6 +13,11 @@ const dashboardSidebar: IDashboardSidebar[] = [
   {
     name: "Home",
     icon: FaHome,
+    path: "/",
+  },
+  {
+    name: "Overview",
+    icon: FaChartLine,
     path: "/dashboard",
   },
   {

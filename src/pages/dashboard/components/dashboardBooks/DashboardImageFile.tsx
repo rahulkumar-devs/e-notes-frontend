@@ -14,7 +14,7 @@ import { bookValidation } from "../../validations/bookValidation";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { addImageFiles} from "@/features/dashboard/booksReducer";
+import { addImageFiles } from "@/features/dashboard/booksReducer";
 
 interface ImageFileProps {
   item: any; // Type as per your configuration
@@ -58,6 +58,7 @@ const DashboardImageFile: FC<ImageFileProps> = ({ item, form }) => {
                 type="file"
                 accept={item.accept}
                 multiple={item.multiple}
+                value={""}
                 onChange={(e) => {
                   handleImageChange(e);
                   field.onChange(e);

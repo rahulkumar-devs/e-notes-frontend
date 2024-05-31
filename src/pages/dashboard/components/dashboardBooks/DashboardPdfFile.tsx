@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
-import { bookValidation } from "../../validations/bookValidation";
+import {
+  IncomingBookSchema,
+  bookValidation,
+} from "../../validations/bookValidation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { setPdfFile } from "@/features/dashboard/booksReducer";
@@ -20,10 +23,11 @@ import { setPdfFile } from "@/features/dashboard/booksReducer";
 interface PdfFileProps {
   item: any; // Type as per your configuration
   form: UseFormReturn<z.infer<typeof bookValidation>>;
+  bookData?: IncomingBookSchema;
 }
 
 const DashboardPdfFile: React.FC<PdfFileProps> = ({ item, form }) => {
-    const dispatch:AppDispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const handleSingleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -38,7 +42,7 @@ const DashboardPdfFile: React.FC<PdfFileProps> = ({ item, form }) => {
       alert("No file chosen");
     }
   };
-
+console.log(item.accept)
   return (
     <FormField
       key={item.name}
@@ -50,19 +54,10 @@ const DashboardPdfFile: React.FC<PdfFileProps> = ({ item, form }) => {
           <FormControl>
             <Input
               type="file"
+value={""}
               accept={item.accept}
-              {...field}
+              onBlur={field.onBlur}
               onChange={handleSingleFile}
-              // onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              //     const file = event.target.files?.[0];
-              //     if (file) {
-              //         if (file.size >= 10 * 1024 * 1024) {
-              //             alert("File size should be less than 10MB.");
-              //             // Clear the input value to allow re-selection of the file
-              //             event.target.value = "";
-              //         }
-              //     }
-              // }}
             />
           </FormControl>
           {item.helpText && <FormDescription>{item.helpText}</FormDescription>}

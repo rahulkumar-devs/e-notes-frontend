@@ -59,6 +59,7 @@ const DashboardBookCoverImage: FC<CoverImageProps> = ({
                 type="file"
                 accept={item.accept}
                 {...field}
+                value={""}
                 onChange={handleSingleFile}
               />
             </FormControl>

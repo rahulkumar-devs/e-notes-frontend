@@ -2,14 +2,14 @@ import { combineReducers, AnyAction } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 import authReducer, { logOut } from "@/features/auth/authReducer";
-import signinFetchApi from "@/features/api/authApi";
+import GlobalsApi from "@/features/api/globalsApi";
 import booksReducer from "@/features/dashboard/booksReducer";
 
 // Combine the reducers
 const appReducer = combineReducers({
   auth: authReducer,
   books: booksReducer, // This reducer will not be persisted
-  [signinFetchApi.reducerPath]: signinFetchApi.reducer,
+  [GlobalsApi.reducerPath]: GlobalsApi.reducer,
 });
 
 const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: AnyAction) => {

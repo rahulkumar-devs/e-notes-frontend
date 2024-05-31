@@ -1,4 +1,4 @@
-import { useBookApiQuery } from '@/features/api/authApi';  // Ensure the path is correct
+import { useBookApiQuery } from '@/features/api/globalsApi';  // Ensure the path is correct
 
 const Books = () => {
   // Directly use the hook provided by RTK Query

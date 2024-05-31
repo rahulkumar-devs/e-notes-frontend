@@ -11,7 +11,7 @@ import {
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 
 import persistedReducer from "./rootReducer";
-import signinFetchApi from "@/features/api/authApi";
+import signinFetchApi from "@/features/api/globalsApi";
 
 // Configure the store with the root reducer and middleware
 export const store = configureStore({

@@ -7,6 +7,7 @@ interface BookInterface {
   coverImage: string;
   imageFiles: string[];
   pdf_file: string;
+  isUpdatingBook: boolean;
 }
 
 const initialState: BookInterface = {
@@ -16,6 +17,7 @@ const initialState: BookInterface = {
   coverImage: "",
   imageFiles: [],
   pdf_file: "",
+  isUpdatingBook: false,
 };
 
 const bookSlice = createSlice({
@@ -34,9 +36,12 @@ const bookSlice = createSlice({
     setPdfFile: (state, action: PayloadAction<string>) => {
       state.pdf_file = action.payload;
     },
+    setUpdatingBook: (state, action: PayloadAction<boolean>) => {
+      state.isUpdatingBook = action.payload;
+    },
   },
 });
 
-export const { setBookData, addImageFiles, setCoverImage, setPdfFile } =
+export const { setBookData, addImageFiles, setCoverImage, setPdfFile,setUpdatingBook } =
   bookSlice.actions;
 export default bookSlice.reducer;
