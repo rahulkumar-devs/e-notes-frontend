@@ -1,41 +1,44 @@
-import  { FC } from "react";
-import { z } from "zod";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { FC } from "react";
+import { bookFormSchema } from "../../validations/bookValidation";
 import { UseFormReturn } from "react-hook-form";
-import { IncomingBookSchema, bookValidation } from "../../validations/bookValidation";
+import { z } from "zod";
 
-interface InputProps {
-  item: any; // Type as per your configuration
-  form: UseFormReturn<z.infer<typeof bookValidation>>;
-  bookData?: IncomingBookSchema;
+interface ICoverImage {
+  form:  UseFormReturn<z.infer<typeof bookFormSchema>>;
+  name:string;
+  placeholder:string;
+  fileAccept?:string;
+  label:string;
 }
 
-const DashboardTextField: FC<InputProps> = ({ item, form }) => {
+const DashboardTextField: FC<ICoverImage> = ({ form,name,label,placeholder }) => {
   return (
     <FormField
-      key={item.name}
       control={form.control}
-      name={item.name as keyof z.infer<typeof bookValidation>}
+      name={name as keyof z.infer<typeof bookFormSchema>}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{item.label}</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <FormControl>
-          <Input
-            {...field}
-            maxLength={item.maxLength}
-            placeholder={item.placeholder}
-            value={typeof field.value === 'string' ? field.value : ''}
+            <Input
+              {...field}
+              placeholder={placeholder}
+              value={typeof field.value === "string" ? field.value : ""}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+             
             />
           </FormControl>
-          {item.helpText && <FormDescription>{item.helpText}</FormDescription>}
+          <FormDescription>This is your public display name.</FormDescription>
           <FormMessage />
         </FormItem>
       )}

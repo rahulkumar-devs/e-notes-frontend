@@ -12,8 +12,6 @@ import ShowMore from "./ShowMore";
 import UpdateBook from "./UpdateBook";
 import { IncomingBookSchema } from "@/pages/dashboard/validations/bookValidation";
 
-
-
 interface ViewUploadBookCardProps {
   book: IncomingBookSchema;
 }
@@ -28,7 +26,7 @@ const ViewUploadBookCard: FC<ViewUploadBookCardProps> = ({ book }) => {
         </div>
 
         {isSelected ? (
-          <UpdateBook book={book} />
+          <UpdateBook book={book}  goBack ={setSelected} />
         ) : (
           <div>
             <CardHeader className="flex items-center justify-between">

@@ -1,104 +1,137 @@
-import React, { FC } from "react";
+import { ChangeEvent, FC, useState } from "react";
+import { FieldValues, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
-import { bookValidation } from "../../validations/bookValidation";
-import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
-import { addImageFiles } from "@/features/dashboard/booksReducer";
+import { bookFormSchema } from "../../validations/bookValidation";
 
-interface ImageFileProps {
-  item: any; // Type as per your configuration
-  form: UseFormReturn<z.infer<typeof bookValidation>>;
+interface IImageFiles {
+  form: UseFormReturn<z.infer<typeof bookFormSchema>>;
+  placeholder?: string;
+  fileAccept?: string;
+  label?: string;
+  name: string;
+  showImageFiles?: { public_id: string; url: string }[];
 }
 
-const DashboardImageFile: FC<ImageFileProps> = ({ item, form }) => {
-  const [selectedImages, setSelectedImages] = React.useState<File[]>([]);
-  const [showAllImages, setShowAllImages] = React.useState(false);
+const DashboardImageFile: FC<IImageFiles> = ({
+  form,
+  name,
+  placeholder = "Choose a cover image...",
+  fileAccept = "image/*",
+  label = "Cover Image",
+  showImageFiles,
+}) => {
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const dispatch: AppDispatch = useDispatch();
+  const handleImageChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    field: FieldValues
+  ) => {
+    const files = event.target.files;
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const validFiles: File[] = Array.from(event.target.files).filter(
-        (file) => file.size <= 10 * 1024 * 1024
+    if (files) {
+      const fileSizeLimit = 5 * 1024 * 1024; // 5MB limit
+      const selectedFiles: File[] = Array.from(files); // Convert FileList to Array
+
+      const isValid = selectedFiles.every((file) => {
+        if (file.size > fileSizeLimit) {
+          setError("File size should be less than 5MB");
+          return false;
+        }
+        if (!file.type.startsWith("image/")) {
+          setError("Only image files are allowed");
+          return false;
+        }
+        return true;
+      });
+
+      if (!isValid) {
+        setImageUrls([]);
+        return;
+      }
+
+      setError(null);
+
+      const readerPromises = selectedFiles.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
       );
-      setSelectedImages(validFiles);
 
-      // Collect all image URLs
-      const imageUrls: string[] = validFiles.map((file) =>
-        URL.createObjectURL(file)
-      );
-
-      // Dispatch action with all image URLs
-      dispatch(addImageFiles(imageUrls));
+      Promise.all(readerPromises)
+        .then((urls) => {
+          setImageUrls(urls);
+          form.setValue(field.name, selectedFiles); // Set value as an array of files
+          form.trigger(field.name);
+        })
+        .catch((error: any) => {
+          setError(`Error reading image file ${error}`);
+          setImageUrls([]);
+        });
     }
   };
 
   return (
-    <div>
-      <FormField
-        key={item.name}
-        control={form.control}
-        name={item.name as keyof z.infer<typeof bookValidation>}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{item.label}</FormLabel>
-            <FormControl>
-              <Input
-                type="file"
-                accept={item.accept}
-                multiple={item.multiple}
-                value={""}
-                onChange={(e) => {
-                  handleImageChange(e);
-                  field.onChange(e);
-                }}
-                onBlur={field.onBlur}
-                ref={field.ref}
-              />
-            </FormControl>
-            {item.helpText && (
-              <FormDescription>{item.helpText}</FormDescription>
-            )}
-            <FormMessage />
-            {selectedImages.length > 0 && (
-              <div className="mt-4">
-                <div className="grid grid-cols-5 gap-2">
-                  {selectedImages
-                    .slice(0, showAllImages ? undefined : 5)
-                    .map((file, index) => (
-                      <img
-                        key={index} // Use a unique key for each image
-                        src={URL.createObjectURL(file)}
-                        alt={`selected-${index}`}
-                        className="w-full h-auto"
-                      />
-                    ))}
-                </div>
-                {selectedImages.length > 5 && (
-                  <Button
-                    className="mt-2"
-                    onClick={() => setShowAllImages(!showAllImages)}
-                  >
-                    {showAllImages ? "Show Less" : "See More"}
-                  </Button>
-                )}
-              </div>
-            )}
-          </FormItem>
-        )}
-      />
-    </div>
+    <FormField
+      control={form.control}
+      name={name as keyof z.infer<typeof bookFormSchema>}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Input
+              type="file"
+              placeholder={placeholder}
+              accept={fileAccept}
+              multiple
+              onChange={(event) => {
+                handleImageChange(event, field);
+                field.onChange(event);
+              }}
+              onBlur={field.onBlur}
+            />
+          </FormControl>
+          <FormDescription>This is your public display name.</FormDescription>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <div className=" flex flex-wrap gap-1 justify-center">
+            {imageUrls && imageUrls.length > 0
+              ? imageUrls.map((url, index) => (
+                  <img
+                    key={index}
+                    src={url}
+                    alt={`Image ${index + 1}`}
+                    className=" max-w-[200px]"
+                  />
+                ))
+              : showImageFiles &&
+                showImageFiles.map((img) => (
+                  <img
+                    key={img.public_id}
+                    src={img.url}
+                    alt={`Image ${img.public_id + 1}`}
+                    className=" max-w-[200px]"
+                  />
+                ))}
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 };
 

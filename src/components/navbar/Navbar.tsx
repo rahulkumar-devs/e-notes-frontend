@@ -5,6 +5,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { ModeToggle } from "../Mode-togler";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import UserController from "./UserController";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -21,15 +22,16 @@ const allowedRoles =["admin","member"];
         <h2 className="font-bold text-xl">e-notes</h2>
         <div className="md:hidden">
           <div className=" flex items-center gap-2 md:hidden ">
+            <UserController/>
             <ModeToggle />
-
             <button onClick={toggleMenu} className="text-xl focus:outline-none">
               {isOpen ? <FaTimes /> : <FaBars />}
             </button>
           </div>
         </div>
         <div className="hidden md:flex gap-6 items-center">
-          <div>
+          <div className="flex items-center gap-2.5">
+          <UserController/>
             <ModeToggle />
           </div>
           {navbarData &&

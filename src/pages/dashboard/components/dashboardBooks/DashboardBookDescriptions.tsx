@@ -8,38 +8,45 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { IncomingBookSchema, bookValidation } from "../../validations/bookValidation";
+
 import { Textarea } from "@/components/ui/textarea";
 import { FC } from "react";
+import { bookFormSchema } from "../../validations/bookValidation";
 
 interface DescriptionsProps {
-  item: any;
-  form: UseFormReturn<z.infer<typeof bookValidation>>;
-  bookData?: IncomingBookSchema; 
+  form: UseFormReturn<z.infer<typeof bookFormSchema>>;
+  name: string;
+  placeholder: string;
+  label: string;
+  maxLength?: number;
 }
 
 const DashboardBookDescriptions: FC<DescriptionsProps> = ({
-  item,
+  name,
+  label,
+  maxLength,
+  placeholder,
   form,
-  bookData,
 }) => {
   return (
     <FormField
-      key={item.name}
+      key={name}
       control={form.control}
-      name={item.name}
+      name={name as keyof z.infer<typeof bookFormSchema>}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{item.label}</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <FormControl>
             <Textarea
               {...field}
-              maxLength={item.maxLength}
-              placeholder={item.placeholder}
-              defaultValue={bookData?.descriptions || ""}
+              maxLength={maxLength}
+              placeholder={placeholder}
+              value={typeof field.value === "string" ? field.value : ""}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
             />
           </FormControl>
-          {item.helpText && <FormDescription>{item.helpText}</FormDescription>}
+          <FormDescription>This is your public display name.</FormDescription>
           <FormMessage />
         </FormItem>
       )}

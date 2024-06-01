@@ -1,76 +1,99 @@
-import React, { FC } from "react";
+import  { ChangeEvent, FC, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
-import { bookValidation } from "../../validations/bookValidation";
-import { useDispatch } from "react-redux";
-import { setCoverImage } from "@/features/dashboard/booksReducer";
-import { AppDispatch } from "@/store/store";
-import { cn } from "@/lib/utils";
+import { bookFormSchema } from "../../validations/bookValidation";
 
-interface CoverImageProps {
-  item: any; // Type as per your configuration
-  form: UseFormReturn<z.infer<typeof bookValidation>>;
-  className?: string;
+interface ICoverImage {
+  form: UseFormReturn<z.infer<typeof bookFormSchema>>;
+  placeholder?: string;
+  fileAccept?: string;
+  label?: string;
+  name:string;
+  showCoverImages?:{
+    public_id:string;
+    url:string;
+  };
 }
 
-const DashboardBookCoverImage: FC<CoverImageProps> = ({
-  item,
+const DashboardBookCoverImage: FC<ICoverImage> = ({
   form,
-  className,
+  placeholder = "Choose a cover image...",
+  fileAccept = "image/*",
+  label = "Cover Image",
+  name,
+  showCoverImages
 }) => {
-  const dispatch: AppDispatch = useDispatch();
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSingleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChanges = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size <= 10 * 1024 * 1024) {
-        // Create object URL for the selected file
-        const imageUrl = URL.createObjectURL(file);
-        // Dispatch action with the URL of the selected cover image
-        dispatch(setCoverImage(imageUrl));
-      } else {
-        alert("Image or file size should be less than 10 MB");
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setError("File size should be less than 5MB");
+        setImageUrl(null);
+        return;
       }
-    } else {
-      alert("No file chosen");
+
+      if (!file.type.startsWith("image/")) {
+        setError("Only image files are allowed");
+        setImageUrl(null);
+        return;
+      }
+
+      setError(null);
+      form.setValue("coverImage", file);
+      form.trigger("coverImage");
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className={cn(" dark:bg-gray-900 dark:text-white", className)}>
-      <FormField
-        key={item.name}
-        control={form.control}
-        name={item.name as keyof z.infer<typeof bookValidation>}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{item.label}</FormLabel>
-            <FormControl>
-              <Input
-                type="file"
-                accept={item.accept}
-                {...field}
-                value={""}
-                onChange={handleSingleFile}
-              />
-            </FormControl>
-            {item.helpText && (
-              <FormDescription>{item.helpText}</FormDescription>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
+    <FormField
+      control={form.control}
+      name={name as keyof z.infer<typeof bookFormSchema> }
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Input
+              type="file"
+              placeholder={placeholder}
+              accept={fileAccept}
+              onChange={(event) => {
+                handleChanges(event);
+                field.onChange(event);
+                const file = event.target.files?.[0];
+                form.setValue(field.name, file); 
+                form.trigger(field.name); 
+                
+              }}
+              onBlur={field.onBlur}
+            />
+          </FormControl>
+          <FormDescription>This is your public display name.</FormDescription>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {imageUrl ? <img src={imageUrl} alt="Cover Preview" style={{ marginTop: '10px', maxHeight: '200px' }} />:
+          <img src={showCoverImages?.url} alt={showCoverImages?.public_id} />
+          }
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 };
 

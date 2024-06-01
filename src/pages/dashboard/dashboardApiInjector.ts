@@ -6,30 +6,36 @@ const dashboardApiInjector = GlobalsApi.injectEndpoints({
       query: () => ({
         url: "/users",
         method: "GET",
-        credentials:"include"
+        credentials: "include",
       }),
       transformResponse: (response: any, meta: any) => {
         if (meta.response?.status === 500) {
           console.error("Internal Server Error: ", response);
-          throw new Error("Internal Server Error",);
+          throw new Error("Internal Server Error");
         }
         return response;
       },
-      
     }),
 
-    updateBookApi : builder.mutation<any,void> ({
-      query:()=>({
-        url:"",
-        method:"PUT",
-        credentials:"include"
+    updateBookApi: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: "/update-book",
+        method: "PUT",
+        credentials: "include",
+        body: formData
+      }),
+    }),
+
+    createBookApi: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: "/create-book",
+        method: "POST",
+        body: formData,
       })
-    })
+    }),
   }),
 });
 
-
-
-export const { useGetUserQuery,useUpdateBookApiMutation } = dashboardApiInjector;
+export const { useGetUserQuery, useUpdateBookApiMutation, useCreateBookApiMutation } = dashboardApiInjector;
 
 export default dashboardApiInjector;

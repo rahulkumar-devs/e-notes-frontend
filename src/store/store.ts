@@ -13,7 +13,6 @@ import { setupListeners } from "@reduxjs/toolkit/query/react";
 import persistedReducer from "./rootReducer";
 import signinFetchApi from "@/features/api/globalsApi";
 
-// Configure the store with the root reducer and middleware
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
@@ -22,7 +21,7 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(signinFetchApi.middleware),
-  devTools: process.env.NODE_ENV !== "production",
+  // devTools: process.env.NODE_ENV !== "production",
 });
 
 // Add listeners for RTK Query

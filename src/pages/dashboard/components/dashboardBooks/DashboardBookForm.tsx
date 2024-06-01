@@ -1,116 +1,102 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 
-import { bookValidation } from "../../validations/bookValidation";
-import { dashboardBooks } from "../static-data";
-
-import {
-  DashboardBookCoverImage,
-  DashboardImageFile,
-  DashboardBookDescriptions,
-  DashboardPdfFile,
-  DashboardTextField,
-} from "./index";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
-import { setBookData } from "@/features/dashboard/booksReducer";
-import SpinnerLoader from "@/components/Spiner";
+import DashboardBookCoverImage from "./DashboardBookCoverImage";
+import DashboardTextField from "./DashboardTextField";
+import DashboardBookDescriptions from "./DashboardBookDescriptions";
+import DashboardImageFile from "./DashboardImageFile";
+import DashboardPdfFile from "./DashboardPdfFile";
+import { bookFormSchema } from "../../validations/bookValidation";
+import { useCreateBookApiMutation } from "../../dashboardApiInjector";
 
 const DashboardBookForm = () => {
-  const isLoading = false;
-
-  const form = useForm<z.infer<typeof bookValidation>>({
-    resolver: zodResolver(bookValidation),
-    defaultValues: {
-      title: "",
-      genre: "",
-      descriptions: "",
-      pdf_file: "",
-      imageFiles: [],
-      coverImage: "",
-    },
+  const form = useForm<z.infer<typeof bookFormSchema>>({
+    resolver: zodResolver(bookFormSchema),
   });
-  const dispatch: AppDispatch = useDispatch();
-  const { coverImage, imageFiles, pdf_file } = useSelector(
-    (state: RootState) => state.books
-  );
-  function onSubmit(values: z.infer<typeof bookValidation>) {
-    dispatch(
-      setBookData({
-        title: values.title,
-        descriptions: values.descriptions,
-        genre: values.genre,
-        coverImage: coverImage,
-        imageFiles: imageFiles,
-        pdf_file: pdf_file,
-      })
-    );
+
+  const [createBookApi, { isLoading }] = useCreateBookApiMutation();
+
+  // Define a submit handler.
+  async function onSubmit(values: z.infer<typeof bookFormSchema>) {
+    console.log(values);
+    const formData = new FormData();
+
+    formData.append("title", values.title);
+    formData.append("genre", values.genre);
+    formData.append("descriptions", values.descriptions);
+    if (values.coverImage) formData.append("coverImage", values.coverImage);
+
+    if (values.imageFiles) {
+      values.imageFiles.forEach((file: File) => {
+        formData.append("imageFiles", file);
+      });
+    }
+    if (values.pdf_file) formData.append("pdf_file", values.pdf_file);
+
+    try {
+      const res = await createBookApi(formData);
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
-    <div className="md:px-2.5 w-full" id="dashboardBookForm">
-      <div></div>
+    <div>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 dark:bg-gray-900 dark:text-white "
-        >
-          {dashboardBooks.map((item) => {
-            if (item.name === "pdf_file") {
-              return (
-                <DashboardPdfFile key={item.name} item={item} form={form} />
-              );
-            }
-
-            if (item.name === "imageFiles") {
-              return (
-                <DashboardImageFile key={item.name} item={item} form={form} />
-              );
-            }
-            if (item.name === "coverImage") {
-              return (
-                <DashboardBookCoverImage
-                  key={item.name}
-                  item={item}
-                  form={form}
-                />
-              );
-            }
-            if (item.name === "descriptions") {
-              return (
-                <DashboardBookDescriptions
-                  key={item.name}
-                  item={item}
-                  form={form}
-                />
-              );
-            }
-            return (
-              <DashboardTextField key={item.name} item={item} form={form} />
-            );
-          })}
-
-          <div className="flex justify-around">
-            <Button
-              type="submit"
-              className=" flex justify-between items-center "
-              disabled={isLoading}
-            >
-              <SpinnerLoader
-                isLoading={isLoading}
-                size="h-4 w-4"
-                color="border-blue-500"
-              />
-
-              <span className={` ${isLoading ? "hidden" : "block"}`}>
-                 Upload
-              </span>
-            </Button>
-            
-          </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {/* Title */}
+          <DashboardTextField
+            name="title"
+            label="Title"
+            placeholder="Enter a valid and sensible Title"
+            form={form}
+          />
+          {/* Genre */}
+          <DashboardTextField
+            name="genre"
+            label="Genre"
+            placeholder="Enter a valid and sensible Genre"
+            form={form}
+          />
+          {/* Cover Image */}
+          <DashboardBookCoverImage
+            form={form}
+            name="coverImage"
+            label="Cover Image"
+            fileAccept="image/*"
+            placeholder="Choose a cover image"
+          />
+          {/* Descriptions */}
+          <DashboardBookDescriptions
+            form={form}
+            name="descriptions"
+            label="Description"
+            placeholder="Enter a valid description"
+          />
+          {/* Image File */}
+          <DashboardImageFile
+            form={form}
+            name="imageFiles"
+            label="Image File"
+            fileAccept="image/*"
+            placeholder="Choose image file(s)"
+          />
+          {/* PDF File */}
+          <DashboardPdfFile
+            form={form}
+            name="pdf_file"
+            label="PDF File"
+            fileAccept="application/pdf"
+            placeholder="Choose a PDF file"
+          />
+          {/* Submit Button */}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "uploading..." : "Upload"}
+          </Button>
         </form>
       </Form>
     </div>

@@ -14,17 +14,16 @@ import {
   DropdownMenuLabel,
 } from "@radix-ui/react-dropdown-menu";
 
-
 interface IShowmore {
-  setSelected:(isUpateBook:boolean)=> void;
-  isSelected?:boolean
+  setSelected: (isUpateBook: boolean) => void;
+  isSelected?: boolean;
 }
 
-const ShowMore:FC<IShowmore> = ({setSelected}) => {
+const ShowMore: FC<IShowmore> = ({ setSelected }) => {
   const [isUpateBook, setUpdateBook] = useState(false);
   const handleEdit = () => {
     setUpdateBook(!isUpateBook);
-    setSelected(!isUpateBook)
+    setSelected(!isUpateBook);
   };
 
   const handleDelete = () => {};
@@ -42,17 +41,14 @@ const ShowMore:FC<IShowmore> = ({setSelected}) => {
           <DropdownMenuSeparator className="my-1 border-t border-gray-200" />
           <Button
             onClick={handleEdit}
-            className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
+            className="flex items-center justify-between space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
           >
             <FaRegEdit className="h-4 w-4" />
             <span>Edit</span>
           </Button>
-
-          
-
           <DropdownMenuItem
             onSelect={handleDelete}
-            className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
+            className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 dark:hover:bg-gray-600 rounded-md"
           >
             <MdDelete className="h-4 w-4" />
             <span>Delete</span>

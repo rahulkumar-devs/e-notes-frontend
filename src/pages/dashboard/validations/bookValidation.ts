@@ -1,15 +1,20 @@
 import { z } from "zod";
 
-export const bookValidation = z.object({
-  title: z.string().min(1, "Title is required"),
-  genre: z.string().min(1, "Genre is required"),
-  descriptions: z.string().min(1, "Descriptions are required"),
-  pdf_file: z.string(),
-  imageFiles: z.array(z.string()),
-  coverImage:z.string()
-  // Add other fields as necessary
-});
+export const bookFormSchema = z.object({
+  title: z.string().min(2, {
+    message: "title must be at least 2 characters.",
+  }),
+  genre: z.string().min(2, {
+    message: "genre must be at least 2 characters.",
+  }),
+  descriptions: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  coverImage: z.instanceof(File).optional(),
+  imageFiles: z.array(z.instanceof(File)).nonempty("At least one file is required."),
+  pdf_file: z.instanceof(File).optional(),
 
+})
 export interface IncomingBookSchema {
   title: string;
   genre: string;
@@ -18,5 +23,3 @@ export interface IncomingBookSchema {
   imageFiles: { public_id: string; url: string }[];
   pdf_file: { public_id: string; url: string };
 }
-
-

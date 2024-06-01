@@ -1,66 +1,108 @@
-// PdfFile.tsx
-
-import React from "react";
+import  { ChangeEvent, FC, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
-import {
-  IncomingBookSchema,
-  bookValidation,
-} from "../../validations/bookValidation";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
-import { setPdfFile } from "@/features/dashboard/booksReducer";
+import { bookFormSchema } from "../../validations/bookValidation";
 
-interface PdfFileProps {
-  item: any; // Type as per your configuration
-  form: UseFormReturn<z.infer<typeof bookValidation>>;
-  bookData?: IncomingBookSchema;
+interface IPdfFile {
+  form: UseFormReturn<z.infer<typeof bookFormSchema>>;
+  placeholder?: string;
+  label?: string;
+  name:string;
+  fileAccept:string
+  showPdfFile?:{
+    public_id:string;
+    url:string;
+  }
 }
 
-const DashboardPdfFile: React.FC<PdfFileProps> = ({ item, form }) => {
-  const dispatch: AppDispatch = useDispatch();
-  const handleSingleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+const DashboardPdfFile: FC<IPdfFile> = ({
+  name,
+  fileAccept="application/pdf",
+  form,
+  placeholder = "Choose a PDF file...",
+  label = "PDF File",
+  showPdfFile
+}) => {
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size <= 10 * 1024 * 1024) {
-        const imageUrl = URL.createObjectURL(file);
-
-        dispatch(setPdfFile(imageUrl));
-      } else {
-        alert("Image or file size should be less than 10 MB");
+      if (file.size > 10 * 1024 * 1024) {
+        // 10MB limit
+        setError("File size should be less than 10MB");
+        setFileUrl(null);
+        return;
       }
-    } else {
-      alert("No file chosen");
+
+      if (!file.type.startsWith("application/pdf")) {
+        setError("Only PDF files are allowed");
+        setFileUrl(null);
+        return;
+      }
+
+      setError(null);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFileUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
-console.log(item.accept)
+
   return (
     <FormField
-      key={item.name}
       control={form.control}
-      name={item.name as keyof z.infer<typeof bookValidation>}
+      name={name as keyof z.infer<typeof bookFormSchema>}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{item.label}</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input
               type="file"
-value={""}
-              accept={item.accept}
+              placeholder={placeholder}
+              accept={fileAccept}
+              onChange={(event) => {
+                handleFileChange(event); // Pass field object here
+                field.onChange(event);
+                const file = event.target.files?.[0];
+
+                form.setValue(field.name, file);
+                form.trigger(field.name);
+              }}
               onBlur={field.onBlur}
-              onChange={handleSingleFile}
             />
           </FormControl>
-          {item.helpText && <FormDescription>{item.helpText}</FormDescription>}
+          <FormDescription>This is your public display name.</FormDescription>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {fileUrl ?(
+            <embed
+              src={fileUrl}
+              type="application/pdf"
+              width="100%"
+              height="250px"
+            />
+          ):
+          <embed
+          src={showPdfFile?.url}
+          type="application/pdf"
+          width="100%"
+          height="250px"
+
+        />
+          
+          }
           <FormMessage />
         </FormItem>
       )}

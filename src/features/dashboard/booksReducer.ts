@@ -4,9 +4,9 @@ interface BookInterface {
   title: string;
   genre: string;
   descriptions: string;
-  coverImage: string;
-  imageFiles: string[];
-  pdf_file: string;
+  coverImage: string; // Change type to string
+  imageFiles: string[]; // Change type to File[]
+  pdf_file: string; // Change type to string
   isUpdatingBook: boolean;
 }
 
@@ -30,10 +30,10 @@ const bookSlice = createSlice({
     addImageFiles: (state, action: PayloadAction<string[]>) => {
       state.imageFiles = [...state.imageFiles, ...action.payload];
     },
-    setCoverImage: (state, action: PayloadAction<string>) => {
+    setCoverImage: (state, action: PayloadAction<string>) => { // Change payload type to string
       state.coverImage = action.payload;
     },
-    setPdfFile: (state, action: PayloadAction<string>) => {
+    setPdfFile: (state, action: PayloadAction<string>) => { // Change payload type to string
       state.pdf_file = action.payload;
     },
     setUpdatingBook: (state, action: PayloadAction<boolean>) => {
@@ -42,6 +42,11 @@ const bookSlice = createSlice({
   },
 });
 
-export const { setBookData, addImageFiles, setCoverImage, setPdfFile,setUpdatingBook } =
-  bookSlice.actions;
+export const {
+  setBookData,
+  addImageFiles,
+  setCoverImage,
+  setPdfFile,
+  setUpdatingBook,
+} = bookSlice.actions;
 export default bookSlice.reducer;

@@ -27,6 +27,7 @@ import {
   DashboardMails,
 } from "@/pages/dashboard/pages";
 import { ThemeProvider } from "@/components/Theme-provider"
+import "../init"
 
 const router = createBrowserRouter(
   createRoutesFromElements(

@@ -50,11 +50,11 @@ export default function DashboardSidebar() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row sticky top-0 right-0 overflow-y-scroll no-scrollbar">
+    <div className="flex flex-col md:flex-row sticky top-0 right-0 overflow-y-scroll no-scrollbar ">
       <div
         className={`${
           open ? "w-full md:w-40" : "w-full md:w-60"
-        } flex flex-col md:h-screen p-3 bg-black shadow duration-300 md:flex-col`}
+        } flex flex-col md:h-screen p-3 dark:bg-gray-950 bg-slate-200 text-black dark:text-white shadow duration-300 md:flex-col`}
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between ">
@@ -92,12 +92,12 @@ export default function DashboardSidebar() {
                       to={item.path}
                       className={({ isActive }) =>
                         `flex items-center p-2 space-x-3 rounded-md ${
-                          isActive ? "bg-gray-800" : ""
+                          isActive ? "dark:bg-gray-800 bg-slate-500" : ""
                         }`
                       }
                     >
-                      <item.icon className="w-6 h-6 text-gray-100" />
-                      <span className="text-gray-100">{item.name}</span>
+                      <item.icon className="w-6 h-6  text-orange-300 dark:text-white " />
+                      <span className="text-black dark:text-white ">{item.name}</span>
                     </NavLink>
                   </li>
                 );
@@ -105,10 +105,10 @@ export default function DashboardSidebar() {
               <li className="rounded-sm">
                 <Button
                   onClick={handleLogOut}
-                  className={`flex items-center p-2 space-x-3 rounded-md dark:text-white dark:bg-red-500 `}
+                  className={`flex items-center p-2 space-x-3 rounded-md dark:text-black bg-red-500 `}
                 >
-                  <FaSignOutAlt className="w-6 h-6 text-gray-100" />
-                  <span className="text-gray-100">Logout</span>
+                  <FaSignOutAlt className="w-6 h-6 text-orange-300 dark:text-black " />
+                  <span className=" dark:text-black">Logout</span>
                 </Button>
               </li>
             </ul>
